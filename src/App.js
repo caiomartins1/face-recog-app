@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Navigation from './components/navigation/Navigation';
+import Singin from './components/Singin/Singin';
 import Logo from './components/logo/Logo';
+import Register from './components/Register/Register';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/rank/Rank';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
@@ -29,7 +31,9 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
-      box: {}
+      box: {},
+      route: 'singin',
+      isSingnedIn: false
     }
   }
 
@@ -47,12 +51,20 @@ class App extends Component {
   }
 
   displayFaceBox = (box) => {
-    console.log(box);
     this.setState({box})
   }
 
   onInputChange = (event) => {
     this.setState({ input: event.target.value });
+  }
+
+  onRouteChange = (route) => {
+    if (route === 'singout') {
+      this.setState({isSingnedIn: false});
+    } else if (route === 'home') {
+      this.setState({isSingnedIn: true});
+    }
+    this.setState({route});
   }
 
   onButtonSubmit = () => {
@@ -67,18 +79,27 @@ class App extends Component {
   }
 
   render() {
+    const { isSingnedIn, imageUrl, route, box } = this.state;
     return(
       <div className="app">
         <Particles className="particles" params = {particlesConfig} />
-        <Navigation />
-        <Logo />
-        <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange}
-         onButtonSubmit={this.onButtonSubmit} />
-        <FaceRecognition box={this.state.box} imageUrl={ this.state.imageUrl }/>
+        <Navigation isSingnedIn={isSingnedIn} onRouteChange={this.onRouteChange}/>
+        { route === 'home' 
+          ? <div> 
+              <Logo />
+              <Rank />
+              <ImageLinkForm onInputChange={this.onInputChange}
+              onButtonSubmit={this.onButtonSubmit} />
+              <FaceRecognition box={box} imageUrl={imageUrl}/>    
+            </div>
+          : route === 'singin' 
+          ? <Singin onRouteChange={this.onRouteChange}/> : <Register onRouteChange={this.onRouteChange}/>
+        }
       </div>
     )
   }
 }
 
 export default App;
+
+
